@@ -280,8 +280,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | user                                       | add a new person               |                                                                        |
 | `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
 | `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
+| `* * *`  | user                                     | edit a contact's details                                            | fix mistakes or add details I learn later                         |
 | `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
+| `* *`    | careless user                            | undo an accidental deletion or edit                                 | avoid losing important information                                |
 | `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| `*`      | user                                     | see which contact entries are incomplete                            | remember to fill in missing details later                         |
+| `*`      | frequent user                            | reorder the information shown for a contact                         | see the details I care about first                                |
+| `*`      | expert user                              | define shortcuts for commands                                       | add contacts faster than typing commands in full                  |
+| `*`      | frequent user                            | reuse templates of common fields when adding contacts               | enter repetitive data faster                                      |
 
 *{More to be added}*
 
