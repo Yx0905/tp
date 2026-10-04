@@ -393,6 +393,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Normalisation**: Trimming outer spaces and collapsing repeated spaces before a value is stored or compared
+* **Display value**: The normalised spelling that Astra stores and shows to the user
+* **Unique key**: A contact number or email. No two contacts may share one
 
 --------------------------------------------------------------------------------------------------------------------
 
