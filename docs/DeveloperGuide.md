@@ -281,7 +281,13 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
 | `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
 | `* * *`  | user                                     | edit a contact's details                                            | fix mistakes or add details I learn later                         |
+| `* * *`  | frequent user                              | delete contacts I no longer need | reduce clutter                                                         |
+| `* * *`  | user                                       | clear all contacts after confirming | start over when I no longer need the list                              |
+| `* * *`  | user                                       | exit the app with all saved changes kept | close it without worrying about losing data                            |
 | `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
+| `* *`    | user                                       | record follow-up actions for a contact | remember what I need to do after meeting them                          |
+| `* *`    | user                                       | mark a follow-up action as completed | tell pending tasks apart from finished ones                            |
+| `* *`    | user                                       | see when I last interacted with someone | know how long it has been since we last met                            |
 | `* *`    | careless user                            | undo an accidental deletion or edit                                 | avoid losing important information                                |
 | `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
 | `*`      | user                                     | see which contact entries are incomplete                            | remember to fill in missing details later                         |
@@ -317,6 +323,55 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 3a1. AddressBook shows an error message.
 
       Use case resumes at step 2.
+
+**Use case: UC02 - Delete contacts**
+
+**MSS**
+
+1. User enters a delete command with one or more emails, one contact number, or one name.
+2. Astra shows the selected contacts and asks for confirmation.
+3. User confirms.
+4. Astra deletes the contacts, saves the contact list and shows the number of contacts remaining.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The contact list is empty.
+    * 1a1. Astra shows that there are no contacts to delete.
+
+      Use case ends.
+
+* 1b. The input is empty, mixes selector types, or contains a malformed email.
+    * 1b1. Astra shows the relevant error message.
+
+      Use case ends.
+
+* 1c. A requested email, contact number or name does not match any contact.
+    * 1c1. Astra identifies the missing target and deletes nothing.
+
+      Use case ends.
+
+* 1d. Several contacts match the given name.
+    * 1d1. Astra shows a ranked, numbered list of matching contacts with their names, companies and emails.
+    * 1d2. User selects a contact by index.
+
+      Use case resumes at step 2.
+
+    * 1d2a. User enters an invalid index.
+        * 1d2a1. Astra shows an error message.
+
+          Use case resumes at step 1d2.
+
+* 3a. User answers n or cancel.
+    * 3a1. Astra shows that the deletion was cancelled.
+
+      Use case ends.
+
+* 4a. Saving fails.
+    * 4a1. Astra shows a save error. The contact list and file are unchanged.
+
+      Use case ends.
 
 **Use case: UC04 - Edit a contact**
 
@@ -377,6 +432,44 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
+**Use case: UC05 - Clear all contacts**
+
+**MSS**
+
+1. User requests to clear all contacts.
+2. Astra shows the total number of contacts and asks for confirmation.
+3. User confirms.
+4. Astra saves an empty contact list and shows that 0 contacts remain.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The contact list is empty.
+    * 1a1. Astra shows that there are no contacts to clear.
+
+      Use case ends.
+
+* 1b. The command has extra arguments.
+    * 1b1. Astra shows the command usage.
+
+      Use case ends.
+
+* 3a. User answers n or cancel.
+    * 3a1. Astra shows that the clear was cancelled and how many contacts remain.
+
+      Use case ends.
+
+* 3b. User enters a response other than y or n.
+    * 3b1. Astra asks the user to enter y or n.
+
+      Use case resumes at step 3.
+
+* 4a. Saving fails.
+    * 4a1. Astra shows a save error. The contact list and file are unchanged.
+
+      Use case ends.
+
 *{More to be added}*
 
 ### Non-Functional Requirements
@@ -384,6 +477,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
 2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+8.  Should allow only one running instance to use the contact file at a time.
 10. Every error message should state what was wrong and, where relevant, the accepted format.
 11. Should be packaged as a single JAR file that runs without an installer.
 
@@ -396,6 +490,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Normalisation**: Trimming outer spaces and collapsing repeated spaces before a value is stored or compared
 * **Display value**: The normalised spelling that Astra stores and shows to the user
 * **Unique key**: A contact number or email. No two contacts may share one
+* **Duplicate contact**: An incoming contact whose contact number or email already belongs to an existing contact
+* **Merge**: Combining the distinct values of an existing and an incoming contact into one record, keeping the existing values first
+* **MSS (Main Success Scenario)**: The most common path through a use case, where everything goes as expected
 
 --------------------------------------------------------------------------------------------------------------------
 
