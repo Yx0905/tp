@@ -318,6 +318,65 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
+**Use case: UC04 - Edit a contact**
+
+**MSS**
+
+1. User enters an edit command with a contact's name and the new values of one or more fields.
+2. Astra finds the contact and validates the new values.
+3. Astra updates the contact, saves the contact list and lists every updated field.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. No field to change is given.
+    * 1a1. Astra shows that at least one field must be provided.
+
+      Use case ends.
+
+* 1b. A prefix is unsupported or repeated, a required value is empty, or a value is malformed.
+    * 1b1. Astra shows the relevant error message and the edit command format.
+
+      Use case ends.
+
+* 2a. No contact matches the name.
+    * 2a1. Astra shows that the contact was not found.
+
+      Use case ends.
+
+* 2b. Several contacts match the name.
+    * 2b1. Astra shows a ranked, numbered list of matching contacts.
+    * 2b2. User selects a contact by index.
+
+      Use case resumes at step 2.
+
+* 2c. The new contact number or email already belongs to another contact.
+    * 2c1. Astra rejects the whole edit and changes nothing.
+
+      Use case ends.
+
+* 2d. The new name or LinkedIn URL matches another contact.
+    * 2d1. Astra warns the user and asks for confirmation.
+    * 2d2. User confirms.
+
+      Use case resumes at step 3.
+
+* 2e. Every new value is identical to the current one.
+    * 2e1. Astra shows that there are no changes to apply and does not save.
+
+      Use case ends.
+
+* 3a. Saving fails.
+    * 3a1. Astra shows a save error. The contact list and file are unchanged.
+
+      Use case ends.
+
+* *a. At any prompt, the user enters cancel or n.
+    * *a1. Astra shows that the edit was cancelled.
+
+      Use case ends.
+
 *{More to be added}*
 
 ### Non-Functional Requirements
