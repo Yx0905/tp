@@ -49,7 +49,18 @@ deactivate ContactFileParser
 LogicManager -> DeleteCommand : execute(m)
 activate DeleteCommand
 
-DeleteCommand -> Model : deletePerson(1)
+DeleteCommand -> Model : getFilteredPersonList()
+activate Model
+
+Model --> DeleteCommand : lastShownList
+deactivate Model
+
+note right of DeleteCommand
+  p = lastShownList.get(0),
+  the person at index 1
+end note
+
+DeleteCommand -> Model : deletePerson(p)
 activate Model
 
 Model --> DeleteCommand
