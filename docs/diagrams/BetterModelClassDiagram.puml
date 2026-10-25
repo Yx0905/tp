@@ -14,10 +14,10 @@ UniquePersonList -right-> Person
 
 Person -up-> "*" Tag
 
-Person *--> Name
-Person *--> Company
-Person *--> Role
-Person *--> Phone
-Person *--> Email
-Person *--> Linkedin
+Person *--> "1" Name
+Person *--> "0..1" Company
+Person *--> "0..1" Role
+Person *--> "0..1" Phone
+Person *--> "0..1" Email
+Person *--> "0..1" Linkedin
 @enduml

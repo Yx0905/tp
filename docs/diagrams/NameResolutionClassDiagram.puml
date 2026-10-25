@@ -1,0 +1,34 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+
+package Logic as LogicPackage {
+Class DeleteCommand
+Class EditCommand
+Class PersonNameResolver {
+  + {static} resolve(Model, String, String) : Outcome
+}
+Class "<<interface>>\nOutcome" as Outcome
+Class Unique
+Class Several
+}
+
+package Model as ModelPackage {
+Class "<<interface>>\nModel" as Model
+Class NameContainsKeywordsPredicate
+Class Person
+}
+
+DeleteCommand ..> PersonNameResolver : <<call>>
+EditCommand ..> PersonNameResolver : <<call>>
+
+PersonNameResolver ..> Outcome : <<create>>
+Unique .up.|> Outcome
+Several .up.|> Outcome
+Unique --> "1" Person
+
+PersonNameResolver ..> NameContainsKeywordsPredicate : <<create>>
+PersonNameResolver ..> Model : filters >
+@enduml

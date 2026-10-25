@@ -174,6 +174,8 @@ So there is one answer, in two pieces:
 * `PersonNameResolver` (in `logic.commands`) turns a name into the single contact it refers to, by
   applying that predicate and looking at how many contacts came back. `edit` and `delete` go through it.
 
+<img src="images/NameResolutionClassDiagram.png" width="550" />
+
 `PersonNameResolver#resolve` returns a sealed `Outcome` of either `Unique`, carrying the one contact
 that matched, or `Several`, carrying a numbered list of the matches for the command to show. A name
 matching nothing is a `CommandException` instead, since there is no contact for the caller to act on.
