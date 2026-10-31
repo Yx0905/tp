@@ -113,6 +113,20 @@ public class PendingWorkflowTest {
     }
 
     @Test
+    public void execute_exitShortcutOrArgumentsWhileConfirmationPending_exitsWithoutConfirming() throws Exception {
+        logic.execute("alias q exit");
+        ContactFile original = new ContactFile(model.getContactFile());
+        for (String prompt : List.of("delete 1", "edit 1 p/76543210", "clear")) {
+            for (String reply : List.of("q", "Q", "exit ignored")) {
+                logic.execute(prompt);
+                assertTrue(logic.execute(reply).isExit(), prompt + " then " + reply);
+                assertEquals(original, model.getContactFile());
+            }
+        }
+        assertEquals(0, contactStorage.saveCount);
+    }
+
+    @Test
     public void execute_ambiguousDelete_selectsThenConfirmsAndRestoresOnCancel() throws Exception {
         logic.execute("find Alice");
         ContactFile original = new ContactFile(model.getContactFile());
