@@ -71,7 +71,7 @@ public class LogicManager implements Logic {
                 ? pendingPersonsBeforeCommand : List.copyOf(model.getContactFile().getPersonList());
         Command command = pendingRequest == null ? null : pendingCommand;
         try {
-            CommandResult commandResult;
+            CommandResult commandResult = null;
             if (pendingRequest != null) {
                 String response = commandText.trim();
                 if (response.equalsIgnoreCase("n") || response.equalsIgnoreCase("cancel")) {
@@ -82,15 +82,14 @@ public class LogicManager implements Logic {
                 }
                 if (response.equalsIgnoreCase(ExitCommand.COMMAND_WORD)
                         || pendingRequest.shouldRunAsCommand(response)) {
+                    // The reply leaves the request and runs below like any other command.
                     clearPendingRequest();
-                    command = contactFileParser.parseCommand(commandText, model.getCommandAliases());
                     personsBeforeCommand = List.copyOf(model.getContactFile().getPersonList());
-                    logger.fine("Executing " + command.getClass().getSimpleName());
-                    commandResult = command.execute(model);
                 } else {
                     commandResult = pendingRequest.respond(response, model);
                 }
-            } else {
+            }
+            if (commandResult == null) {
                 String shortcutNote = shortcutNote(commandText);
                 try {
                     command = contactFileParser.parseCommand(commandText, model.getCommandAliases());

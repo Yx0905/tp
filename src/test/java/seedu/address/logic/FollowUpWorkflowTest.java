@@ -382,6 +382,19 @@ class FollowUpWorkflowTest {
     }
 
     @Test
+    void execute_shortcutLeavingSelection_showsExpansionInFeedbackAndErrors() throws Exception {
+        logic.execute("followup 1 a/Call");
+        logic.execute("alias s star");
+        logic.execute("followups");
+        assertTrue(logic.execute("s 1").getFeedbackToUser().startsWith("Ran: star 1\n"));
+        for (String reply : List.of("s 999", "s")) {
+            logic.execute("followups");
+            Exception e = assertThrows(Exception.class, () -> logic.execute(reply));
+            assertTrue(e.getMessage().startsWith("Ran: star"), e.getMessage());
+        }
+    }
+
+    @Test
     void execute_selectionCancellation_clearsRequestAndAllowsNewCommands() throws Exception {
         logic.execute("followup 1 a/Call");
         byte[] bytes = Files.readAllBytes(file);
