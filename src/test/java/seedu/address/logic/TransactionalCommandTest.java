@@ -147,6 +147,40 @@ public class TransactionalCommandTest {
         assertEquals(1, storage.saveCount);
     }
 
+    @Test
+    public void execute_failedUndoSaves_keepUndoAvailableAndHistoryUnmarked() throws Exception {
+        logic.execute("delete 1");
+        logic.execute("y");
+        logic.execute("edit 1 p/76543210");
+        logic.execute("y");
+        assertUndoSurvivesFailedSave("edit");
+
+        logic.execute("delete 1");
+        logic.execute("y");
+        assertUndoSurvivesFailedSave("deletion");
+    }
+
+    /**
+     * Confirms the latest undo while saving fails, then retries it successfully.
+     */
+    private void assertUndoSurvivesFailedSave(String action) throws Exception {
+        ContactFile beforeUndo = new ContactFile(model.getContactFile());
+        byte[] bytes = Files.readAllBytes(activeFile);
+        storage.shouldFail = true;
+        logic.execute("undo");
+        assertThrows(CommandException.class, () -> logic.execute("y"));
+        assertEquals(beforeUndo, model.getContactFile());
+        assertArrayEquals(bytes, Files.readAllBytes(activeFile));
+        String history = logic.execute("history").getFeedbackToUser();
+        assertEquals(false, history.contains(action + " (undone)"));
+
+        storage.shouldFail = false;
+        logic.execute("undo");
+        logic.execute("y");
+        assertEquals(true, logic.execute("history").getFeedbackToUser().contains(action + " (undone)"));
+        assertEquals(UndoManager.MESSAGE_NOTHING_TO_UNDO, logic.execute("undo").getFeedbackToUser());
+    }
+
     /**
      * Counts save attempts and simulates a storage failure before writing.
      */
