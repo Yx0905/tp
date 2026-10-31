@@ -34,6 +34,7 @@ public class UndoManager {
     private final List<HistoryEntry> history = new ArrayList<>();
     private HistoryEntry undoableEntry;
     private HistoryEntry pendingEntry;
+    private HistoryEntry uncommittedUndo;
 
     /**
      * Records a successful data-changing command and updates the available undo action.
@@ -119,11 +120,31 @@ public class UndoManager {
         }
 
         updateModel(model, currentPersons);
-        HistoryEntry undoneEntry = undoableEntry;
+        // The entry stays available until the restored contacts are saved; see commitUndo and discardUndo.
+        uncommittedUndo = undoableEntry;
         pendingEntry = null;
         undoableEntry = null;
-        undoneEntry.isUndone = true;
         return new CommandResult(String.format(MESSAGE_UNDO_SUCCESS, formatRestoredPersons(restoredPersons)));
+    }
+
+    /**
+     * Marks a confirmed undo as done once the restored contacts have been saved.
+     */
+    public void commitUndo() {
+        if (uncommittedUndo != null) {
+            uncommittedUndo.isUndone = true;
+            uncommittedUndo = null;
+        }
+    }
+
+    /**
+     * Keeps an undo that was confirmed but not saved available to undo again, and leaves its history unmarked.
+     */
+    public void discardUndo() {
+        if (uncommittedUndo != null) {
+            undoableEntry = uncommittedUndo;
+            uncommittedUndo = null;
+        }
     }
 
     private void restorePersons(List<Person> currentPersons, List<Person> restoredPersons) {

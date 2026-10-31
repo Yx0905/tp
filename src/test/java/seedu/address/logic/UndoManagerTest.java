@@ -45,6 +45,7 @@ public class UndoManagerTest {
         PendingRequest request = undoManager.executeUndo().getPendingRequest().orElseThrow();
 
         request.respond("y", model);
+        undoManager.commitUndo();
         assertEquals(UndoManager.MESSAGE_NOTHING_TO_UNDO,
                 request.respond("y", model).getFeedbackToUser());
         assertEquals(List.of(ALICE), model.getContactFile().getPersonList());

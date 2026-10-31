@@ -124,6 +124,7 @@ public class LogicManager implements Logic {
                     storage.saveUserPrefs(model.getUserPrefs());
                     logger.info("Preference transaction saved");
                 }
+                undoManager.commitUndo();
                 undoManager.recordChange(command, personsBeforeCommand, model.getContactFile().getPersonList(),
                         commandResult.getFeedbackToUser());
                 clearPendingRequest();
@@ -161,6 +162,7 @@ public class LogicManager implements Logic {
 
     private void restoreFailedRequest(ModelSnapshot snapshot) {
         snapshot.restore(model);
+        undoManager.discardUndo();
         clearPendingRequest();
     }
 
