@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javafx.collections.ListChangeListener;
@@ -46,6 +47,9 @@ public class MainWindow extends UiPart<Stage> {
     private Person selectedContact;
     private FollowUpEntry selectedFollowUp;
     private FollowUpListPanel followUpListPanel;
+    private boolean isRequestPending;
+    private Person selectionBeforeRequest;
+    private List<Person> listBeforeRequest;
 
     @FXML
     private StackPane personDetailsPlaceholder;
@@ -234,11 +238,20 @@ public class MainWindow extends UiPart<Stage> {
      */
     private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         lastCommand.setText(commandText);
+        if (!isRequestPending) {
+            selectionBeforeRequest = personListPanel.selectedPersonProperty().get();
+            listBeforeRequest = List.copyOf(logic.getFilteredPersonList());
+        }
         try {
             CommandResult commandResult = logic.execute(commandText);
             logger.fine("Command result displayed; confirmation=" + commandResult.getPendingRequest().isPresent());
+            isRequestPending = commandResult.getPendingRequest().isPresent();
             confirmationPanel.showRequest(commandResult.getPendingRequest().orElse(null));
             displayResult(commandResult);
+            if (!isRequestPending && commandResult.getPersonForDetails().isEmpty()
+                    && commandResult.getFollowUpListing().isEmpty()) {
+                restoreSelectionIfViewRestored();
+            }
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -251,8 +264,10 @@ public class MainWindow extends UiPart<Stage> {
             return commandResult;
         } catch (CommandException | ParseException | RuntimeException e) {
             logger.fine("Command failed: " + e.getClass().getSimpleName());
+            isRequestPending = false;
             confirmationPanel.showRequest(null);
             showContactList();
+            restoreSelectionIfViewRestored();
             showContact(personListPanel.selectedPersonProperty().get());
             resultDisplay.setFeedbackToUser(e.getMessage() == null ? "Unexpected command failure." : e.getMessage());
             throw e;
@@ -289,6 +304,17 @@ public class MainWindow extends UiPart<Stage> {
             } else {
                 resultDisplay.setFeedbackToUser(result.getFeedbackToUser());
             }
+        }
+    }
+
+    /**
+     * Reselects the contact chosen before the latest request when the request left the displayed list as it was,
+     * such as after a cancellation or a rolled-back save, since restoring the list resets the selection.
+     */
+    private void restoreSelectionIfViewRestored() {
+        if (selectionBeforeRequest != null && logic.getFilteredPersonList().equals(listBeforeRequest)) {
+            personListPanel.selectPerson(selectionBeforeRequest);
+            showContact(personListPanel.selectedPersonProperty().get());
         }
     }
 
